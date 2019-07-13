@@ -6,4 +6,4 @@ If you want to use the compiled cv2.so in a future environment, example path is 
 You will want to ln -s the file into your
 **~/anaconda3/envs/ENVNAME/lib/python3.6/site-packages/** directory.
 
-__The script installs the library in the base Anaconda environment.__
+The script installs the library in the base Anaconda environment.
