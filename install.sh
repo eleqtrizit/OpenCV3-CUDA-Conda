@@ -1,12 +1,16 @@
 sudo apt update
 sudo apt -y upgrade
 
-sudo apt -y install nvidia-driver-418
+NVIDIADRIVER=$(apt-cache search nvidia-driver | awk '{print $1}' | grep driver | tail -n -1)
+GSTREAMER=$(apt-cache search libgstreamer | grep dev | awk '{print $1}' | awk '/streamer[0-9]/')
+GSTREAMERBASE=$(apt-cache search libgstreamer | grep dev | awk '{print $1}' | awk '/base[0-9]/')
+
+sudo apt -y install $NVIDIADRIVER 
 sudo apt -y install nvidia-cuda-toolkit clinfo
 sudo apt -y install build-essential cmake pkg-config unzip yasm git gfortran
 sudo apt -y install libjpeg-turbo8-dev libtiff5-dev libpng-dev
 sudo apt -y install libavcodec-dev libavformat-dev libswscale-dev
-sudo apt -y install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+sudo apt -y install $GSTREAMER $GSTREAMERBASE
 sudo apt -y install libxvidcore-dev x264 libx264-dev libfaac-dev libmp3lame-dev libtheora-dev libvorbis-dev
 sudo apt -y install libdc1394-22 libdc1394-22-dev libxine-dev libv4l-dev v4l-utils
 sudo apt -y install libgtk-3-dev
@@ -34,6 +38,7 @@ cd opencv-3.4.5
 mkdir build
 cd build
 
+PYVER=$(python3 --version 2>&1| perl -ne '/^(\S+) (\d\.\d)/; print lc("$1$2")')
 PY2INCLUDE=$(python2 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")
 PY2LIB=$(python2 -c "import distutils.sysconfig as sysconfig; print(sysconfig.get_config_var('LIBDIR'))")
 PY3INCLUDE=$(python3 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")
@@ -81,14 +86,14 @@ cmake \
 make -j 16 -l 8.0 
 sudo make install
 
-cd ~/anaconda3/lib/python3.6/site-packages/
-ln -s /usr/local/lib/python3.6/site-packages/cv2/python-3.6/cv2.cpython-36m-x86_64-linux-gnu.so cv2.so
+cd ~/anaconda3/lib/$PYVER/site-packages/
+ln -s /usr/local/lib/$PYVER/site-packages/cv2/$PYVER/cv2.cpython-36m-x86_64-linux-gnu.so cv2.so
 
 echo If you want to use the compiled cv2.so in a future environment, the path is:
-echo /usr/local/lib/python3.6/site-packages/cv2/python-3.6/cv2.cpython-36m-x86_64-linux-gnu.so
+echo /usr/local/lib/$PYVER/site-packages/cv2/python-3.6/cv2.cpython-36m-x86_64-linux-gnu.so
 echo 
 echo You will want to ln -s the file into your 
-echo ~/anaconda3/envs/ENVNAME/lib/python3.6/site-packages/ directory.
+echo ~/anaconda3/envs/ENVNAME/lib/$PYVER/site-packages/ directory.
 echo
 echo Please make a note of it.
-echo 
+
